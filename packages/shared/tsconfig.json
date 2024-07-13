@@ -1,0 +1,15 @@
+{
+    "declaration": true,
+    "compilerOptions": {
+        "module": "ESNext",
+        "target": "ESNext",
+        "baseUrl": "./",
+        "isolatedModules": true
+    },
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "**/node_modules"
+    ]
+}

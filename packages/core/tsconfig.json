@@ -1,0 +1,34 @@
+{
+    "compilerOptions": {
+        "declaration": false,
+        "strict": false,
+        "moduleResolution": "Node",
+        "module": "ESNext",
+        "target": "ESNext",
+        "jsx": "react-jsx",
+        "baseUrl": "src",
+        "rootDir": ".",
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "paths": {
+            "types/global": [
+                "./types/global.d.ts"
+            ]
+        },
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+    },
+    "typeRoots": [
+        "./node_modules/@types",
+        "./types"
+    ],
+    "include": [
+        "src/**/*",
+        "types/*.d.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
