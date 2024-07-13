@@ -1,7 +1,12 @@
+import fs from "fs-extra";
 import path from "node:path";
-import { removeLeadingSlash, removeTrailingSlash } from "@minipress/shared";
+import { PLUGIN_SASS_NAME, pluginSass } from "@rsbuild/plugin-sass";
+import { PLUGIN_LESS_NAME, pluginLess } from "@rsbuild/plugin-less";
 import { PLUGIN_REACT_NAME, pluginReact } from "@rsbuild/plugin-react";
+import { removeLeadingSlash, removeTrailingSlash } from "@minipress/shared";
 import {
+  DEFAULT_CONFIG_EXTENSIONS,
+  DEFAULT_CONFIG_NAME,
   CLIENT_ENTRY,
   isProduction,
   MDX_REGEXP,
@@ -12,14 +17,33 @@ import {
   SERVER_ENTRY,
 } from "../common/constants";
 
+import type { UserConfig } from "types/global";
 import type { RsbuildConfig } from "@rsbuild/core";
-import type { UserConfig } from "../../../types/global";
 
-export async function createInternalBuildConfig(
-  root: string,
+export async function loadUserConfig(root: string = process.cwd()) {
+  const basePath = path.resolve(root, DEFAULT_CONFIG_NAME);
+  const configPath = DEFAULT_CONFIG_EXTENSIONS.map(
+    (ext) => basePath + ext
+  ).find(fs.pathExistsSync);
+
+  if (!configPath) {
+    console.debug("no config file found.");
+  }
+
+  const { loadConfig } = await import("@rsbuild/core");
+  const { content: config } = (await loadConfig({
+    cwd: root,
+    path: configPath,
+  })) as { content: UserConfig };
+
+  config.root = path.join(root, config.root ?? "docs");
+
+  return config;
+}
+
+export async function createRsbuildConfig(
   config: UserConfig,
-  enableSSG: boolean,
-  runtimeTempDir: string
+  enableSSG: boolean
 ): Promise<RsbuildConfig> {
   const cwd = process.cwd();
 
@@ -55,6 +79,8 @@ export async function createInternalBuildConfig(
 
   return {
     plugins: [
+      ...(isPluginIncluded(config, PLUGIN_SASS_NAME) ? [] : [pluginSass()]),
+      ...(isPluginIncluded(config, PLUGIN_LESS_NAME) ? [] : [pluginLess()]),
       ...(isPluginIncluded(config, PLUGIN_REACT_NAME) ? [] : [pluginReact()]),
     ],
     server: {
@@ -66,7 +92,7 @@ export async function createInternalBuildConfig(
         return urls.map((url) => `${url}/${removeLeadingSlash(base)}`);
       },
       publicDir: {
-        name: path.join(root, PUBLIC_DIR),
+        name: path.join(config.root, PUBLIC_DIR),
       },
     },
     dev: {
@@ -78,14 +104,12 @@ export async function createInternalBuildConfig(
     output: {
       assetPrefix,
       distPath: {
-        // just for rsbuild preview
         root: csrOutDir,
       },
     },
     source: {
       alias: {
         "@theme": [CUSTOM_THEME_DIR, DEFAULT_THEME],
-        "@rspress/core": PACKAGE_ROOT,
       },
       include: [
         PACKAGE_ROOT,
@@ -137,10 +161,7 @@ export async function createInternalBuildConfig(
           .end()
           .use("mdx-loader")
           .loader(require.resolve("../loader.cjs"))
-          .options({
-            root,
-            config,
-          })
+          .options(config)
           .end();
 
         if (chain.plugins.has(CHAIN_ID.PLUGIN.REACT_FAST_REFRESH)) {

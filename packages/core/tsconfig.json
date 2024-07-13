@@ -6,27 +6,23 @@
         "module": "ESNext",
         "target": "ESNext",
         "jsx": "react-jsx",
-        "baseUrl": "src",
+        "baseUrl": ".",
         "rootDir": ".",
         "lib": [
             "ESNext",
             "DOM"
         ],
-        "paths": {
-            "types/global": [
-                "./types/global.d.ts"
-            ]
-        },
+        "paths": {},
         "esModuleInterop": true,
         "skipLibCheck": true,
     },
     "typeRoots": [
-        "./node_modules/@types",
-        "./types"
+        "node_modules/@types",
+        "types"
     ],
     "include": [
         "src/**/*",
-        "types/*.d.ts"
+        "types"
     ],
     "exclude": [
         "node_modules"

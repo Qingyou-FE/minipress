@@ -1,8 +1,8 @@
 {
-  "name": "core",
+  "name": "@minipress/core",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
+  "types": "./types/global.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,7 +12,10 @@
   "dependencies": {
     "@minipress/shared": "workspace:*",
     "@rsbuild/core": "1.0.1-beta.0",
+    "@rsbuild/plugin-less": "1.0.1-beta.0",
     "@rsbuild/plugin-react": "1.0.1-beta.0",
+    "@rsbuild/plugin-sass": "1.0.1-beta.0",
+    "chokidar": "^3.6.0",
     "fs-extra": "^11.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -20,8 +23,8 @@
     "react-router-dom": "^6.24.1"
   },
   "devDependencies": {
-    "@types/node": "^20.14.10",
     "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0"
   }

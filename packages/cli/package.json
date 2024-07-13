@@ -16,9 +16,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@minipress/core": "workspace:*",
     "cac": "^6.7.14",
     "chalk": "^5.3.0",
-    "chokidar": "^3.6.0",
     "picocolors": "^1.0.1",
     "rslog": "^1.2.2"
   },

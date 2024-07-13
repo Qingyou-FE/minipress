@@ -1,9 +1,9 @@
 import chalk from "chalk";
-import color from "picocolors";
-import chokidar from "chokidar";
+import path from "node:path";
 import { cac } from "cac";
 import { logger } from "rslog";
-import { VERSION, CONFIG_FILES, loadConfigFile } from "./config";
+import { createDevServer } from "@minipress/core";
+import { VERSION } from "./config";
 
 logger.greet(`💥 Minipress v${VERSION}\n`);
 
@@ -24,61 +24,35 @@ cli
     ) => {
       process.env.NODE_ENV = "development";
 
-      let isRestarting = false;
-      let docDirectory: string;
-      let cliWatcher: chokidar.FSWatcher;
-      let devServer: Awaited<ReturnType<typeof dev>>;
-
       const cwd = process.cwd();
+
+      let devServer: Awaited<ReturnType<typeof createDevServer>>;
+      let restartPromise: Promise<void> | undefined;
 
       const startDevServer = async () => {
         const { port, host } = options || {};
-        const config = await loadConfigFile(options?.config);
+        devServer = await createDevServer(
+          root,
+          { server: { port, host } },
+          async (event) => {
+            if (!restartPromise) {
+              console.log(
+                `\n✨ ${event.name} ${chalk.green(
+                  path.relative(cwd, event.filepath)
+                )}, dev server will restart...\n`
+              );
 
-        if (root) {
-          // Support root in command, override config file
-          config.root = path.join(cwd, root);
-        } else if (config.root && !path.isAbsolute(config.root)) {
-          // Support root relative to cwd
-          config.root = path.join(cwd, config.root);
-        }
+              restartPromise = (async () => {
+                await devServer.close();
+                await startDevServer();
+              })().finally(() => {
+                restartPromise = undefined;
+              });
+            }
 
-        docDirectory = config.root || path.join(cwd, root ?? "docs");
-        devServer = await dev({
-          appDirectory: cwd,
-          docDirectory,
-          config,
-          extraBuilderConfig: { server: { port, host } },
-        });
-        cliWatcher = chokidar.watch(
-          [`${cwd}/**/{${CONFIG_FILES.join(",")}}`, docDirectory!],
-          {
-            ignoreInitial: true,
-            ignored: ["**/node_modules/**", "**/.git/**", "**/.DS_Store/**"],
+            return restartPromise;
           }
         );
-        cliWatcher.on("all", async (eventName, filepath) => {
-          if (
-            eventName === "add" ||
-            eventName === "unlink" ||
-            (eventName === "change" &&
-              CONFIG_FILES.includes(path.basename(filepath)))
-          ) {
-            if (isRestarting) {
-              return;
-            }
-            isRestarting = true;
-            console.log(
-              `\n✨ ${eventName} ${chalk.green(
-                path.relative(cwd, filepath)
-              )}, dev server will restart...\n`
-            );
-            await devServer.close();
-            await cliWatcher.close();
-            await startDevServer();
-            isRestarting = false;
-          }
-        });
       };
 
       await startDevServer();
@@ -86,7 +60,6 @@ cli
       const exitProcess = async () => {
         try {
           await devServer.close();
-          await cliWatcher.close();
         } finally {
           process.exit(0);
         }

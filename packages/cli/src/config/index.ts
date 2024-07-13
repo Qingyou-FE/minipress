@@ -1,12 +1,8 @@
 export const VERSION = require("../../package.json").version;
 
 export const CONFIG_FILES = [
-  "rspress.config.ts",
-  "rspress.config.js",
-  "_meta.json",
   "i18n.json",
+  "_meta.json",
+  "minipress.config.js",
+  "minipress.config.ts",
 ];
-
-export async function loadConfigFile() {
-  return {};
-}
