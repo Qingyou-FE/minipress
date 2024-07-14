@@ -1,16 +1,14 @@
-import fs from "fs-extra";
 import path from "node:path";
 import chokidar from "chokidar";
+import { CONFIG_FILES } from "./common";
 import { createRsbuildConfig, loadUserConfig } from "./config";
-import { CONFIG_FILES, MINIPRESS_TEMP_DIR } from "./common/constants";
-
 import type { RsbuildConfig } from "@rsbuild/core";
 
-interface ServerInstance {
+interface DevServer {
   close: () => Promise<void>;
 }
 
-interface RestartServerEvent {
+interface RestartEvent {
   name: string;
   filepath: string;
 }
@@ -18,15 +16,14 @@ interface RestartServerEvent {
 export async function createDevServer(
   root: string = process.cwd(),
   extraConfig: RsbuildConfig = {},
-  restartServer?: (event: RestartServerEvent) => Promise<void>
-): Promise<ServerInstance> {
+  restartServer?: (event: RestartEvent) => Promise<void>
+): Promise<DevServer> {
   const config = await loadUserConfig(root);
 
   const { createRsbuild, mergeRsbuildConfig } = await import("@rsbuild/core");
+  const { rsbuildConfig = {}, rsbuildPlugins = [] } = config;
 
   const defaultConfig = await createRsbuildConfig(config, false);
-
-  const { rsbuildConfig = {}, rsbuildPlugins = [] } = config;
 
   const rsbuild = await createRsbuild({
     rsbuildConfig: mergeRsbuildConfig(
@@ -43,7 +40,7 @@ export async function createDevServer(
   });
 
   const cliWatcher = chokidar.watch(
-    [`${root}/**/{${CONFIG_FILES.join(",")}}`, config.root],
+    [`${root}/**/{${CONFIG_FILES.join(",")}}`, config.root || ""],
     {
       ignoreInitial: true,
       ignored: ["**/node_modules/**", "**/.git/**", "**/.DS_Store/**"],
@@ -57,7 +54,7 @@ export async function createDevServer(
       (eventName === "change" && CONFIG_FILES.includes(path.basename(filepath)))
     ) {
       if (restartServer) {
-        return await restartServer({
+        await restartServer({
           name: eventName,
           filepath,
         });

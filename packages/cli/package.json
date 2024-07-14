@@ -3,17 +3,19 @@
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "bin": {
-    "minipress": "./bin/minipress.js"
-  },
+  "types": "types/index.d.ts",
+  "license": "MIT",
   "exports": {
     ".": {
       "default": "./dist/index.js"
     }
   },
+  "bin": {
+    "minipress": "./bin/minipress.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "modern build -w",
+    "build": "modern build"
   },
   "dependencies": {
     "@minipress/core": "workspace:*",

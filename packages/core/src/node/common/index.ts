@@ -27,7 +27,7 @@ export const CONFIG_FILES = [
 
 export const PACKAGE_ROOT = path.join(
   path.dirname(fileURLToPath(new URL(import.meta.url))),
-  ".."
+  "../.."
 );
 
 export const CLIENT_ENTRY = path.join(

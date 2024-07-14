@@ -1,22 +1,18 @@
 {
-  "private": true,
   "name": "monorepo",
+  "private": true,
+  "license": "MIT",
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "prepare": "husky install"
   },
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
-  },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
+    "@modern-js/module-tools": "^2.55.0",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.7"
-  },
-  "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.24.1"
+    "lint-staged": "^15.2.7",
+    "typescript": "^5.5.3"
   }
 }

@@ -3,11 +3,11 @@ import path from "node:path";
 import { cac } from "cac";
 import { logger } from "rslog";
 import { createDevServer } from "@minipress/core";
-import { VERSION } from "./config";
+
+const VERSION = require("../package.json").version;
+const cli = cac("minipress").version(VERSION).help();
 
 logger.greet(`💥 Minipress v${VERSION}\n`);
-
-const cli = cac("minipress").version(VERSION).help();
 
 cli.option("-c,--config [config]", "Specify the path to the config file");
 
@@ -16,18 +16,17 @@ cli
   .alias("dev")
   .option("--host   [host]", "hostname")
   .option("--port   [port]", "port number")
-  .option("--config [port]", "custom config")
   .action(
     async (
       root,
       options?: { port?: number; host?: string; config?: string }
     ) => {
-      process.env.NODE_ENV = "development";
-
       const cwd = process.cwd();
 
       let devServer: Awaited<ReturnType<typeof createDevServer>>;
       let restartPromise: Promise<void> | undefined;
+
+      process.env.NODE_ENV = "development";
 
       const startDevServer = async () => {
         const { port, host } = options || {};

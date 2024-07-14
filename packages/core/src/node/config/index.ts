@@ -15,7 +15,7 @@ import {
   PACKAGE_ROOT,
   PUBLIC_DIR,
   SERVER_ENTRY,
-} from "../common/constants";
+} from "../common";
 
 import type { UserConfig } from "types/global";
 import type { RsbuildConfig } from "@rsbuild/core";
@@ -31,7 +31,7 @@ export async function loadUserConfig(root: string = process.cwd()) {
   }
 
   const { loadConfig } = await import("@rsbuild/core");
-  const { content: config } = (await loadConfig({
+  const { content: config = {} } = (await loadConfig({
     cwd: root,
     path: configPath,
   })) as { content: UserConfig };
@@ -56,7 +56,7 @@ export async function createRsbuildConfig(
     "theme"
   );
 
-  const DEFAULT_THEME = require.resolve("@rspress/theme-default");
+  const DEFAULT_THEME = require.resolve("@minipress/theme-default");
 
   // In production, we need to add assetPrefix in asset path
   const assetPrefix = isProduction()
@@ -74,7 +74,9 @@ export async function createRsbuildConfig(
       ];
 
   function isPluginIncluded(config: UserConfig, pluginName: string): boolean {
-    return config.rsbuildPlugins?.some((plugin) => plugin.name === pluginName);
+    return config.rsbuildPlugins?.some(
+      (plugin: { name: string }) => plugin.name === pluginName
+    );
   }
 
   return {

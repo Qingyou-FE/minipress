@@ -1,15 +1,20 @@
 {
   "name": "@minipress/shared",
   "version": "1.0.0",
-  "description": "",
-  "types": "./types/global.d.ts",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "main": "./dist/index.js",
+  "types": "types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "scripts": {
+    "dev": "modern build -w",
+    "build": "modern build"
+  },
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.14.10"
   }

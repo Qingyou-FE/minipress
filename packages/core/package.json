@@ -1,16 +1,23 @@
 {
   "name": "@minipress/core",
-  "version": "1.0.0",
-  "main": "index.js",
-  "types": "./types/global.d.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
+  "type": "module",
   "license": "ISC",
+  "version": "1.0.0",
+  "types": "types/index.d.ts",
+  "module": "./dist/node/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/node/index.d.ts",
+      "import": "./dist/node/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "modern build -w",
+    "build": "modern build"
+  },
   "dependencies": {
     "@minipress/shared": "workspace:*",
+    "@minipress/theme-default": "workspace:*",
     "@rsbuild/core": "1.0.1-beta.0",
     "@rsbuild/plugin-less": "1.0.1-beta.0",
     "@rsbuild/plugin-react": "1.0.1-beta.0",

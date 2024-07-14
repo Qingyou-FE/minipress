@@ -47,5 +47,5 @@ export interface UserConfig<ThemeConfig = DefaultThemeConfig>
 export async function createDevServer(
   root: string,
   extraConfig?: RsbuildConfig,
-  restartServer?: (event: { name: string; filepath: string }) => Promise<void>
-): Promise<ServerInstance>;
+  restartServer?: (event: RestartEvent) => Promise<void>
+): Promise<DevServer>;
