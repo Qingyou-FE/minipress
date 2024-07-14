@@ -1,6 +1,6 @@
 import path from "node:path";
 import chokidar from "chokidar";
-import { CONFIG_FILES } from "./constant";
+import { CONFIG_FILES, MINIPRESS_TEMP_DIR } from "./constant";
 import { createRsbuildConfig, loadUserConfig } from "./config";
 import type { RsbuildConfig } from "@rsbuild/core";
 
@@ -40,7 +40,7 @@ export async function createDevServer(
   });
 
   const cliWatcher = chokidar.watch(
-    [`${root}/**/{${CONFIG_FILES.join(",")}}`, config.root || ""],
+    [`${root}/**/{${CONFIG_FILES.join(",")}}`, config.root || "", `${root}/${MINIPRESS_TEMP_DIR}`],
     {
       ignoreInitial: true,
       ignored: ["**/node_modules/**", "**/.git/**", "**/.DS_Store/**"],
