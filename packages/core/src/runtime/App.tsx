@@ -1,5 +1,6 @@
-import { HelmetProvider } from "react-helmet-async";
+import { Layout } from "@theme";
 import { BrowserRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 
 interface AppProps {
   helmetContext?: object;
@@ -8,7 +9,7 @@ interface AppProps {
 export function App(props: AppProps) {
   return (
     <HelmetProvider context={props?.helmetContext}>
-      <BrowserRouter>123</BrowserRouter>
+      <BrowserRouter><Layout /></BrowserRouter>
     </HelmetProvider>
   );
 }

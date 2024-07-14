@@ -4,10 +4,6 @@ export type HeadConfig =
 
 export interface LocaleSpecificConfig<ThemeConfig> {
   /**
-   * The root directory of the site.
-   */
-  root?: string;
-  /**
    * Language of the site.
    */
   lang?: string;

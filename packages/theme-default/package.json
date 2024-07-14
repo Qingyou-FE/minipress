@@ -1,7 +1,6 @@
 {
   "name": "@minipress/theme-default",
   "version": "1.0.0",
-  "description": "",
   "type": "module",
   "main": "./dist/index.js",
   "scripts": {

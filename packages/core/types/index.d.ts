@@ -15,6 +15,10 @@ export interface RouteConfig {
 export interface UserConfig<ThemeConfig = DefaultThemeConfig>
   extends LocaleSpecificConfig<ThemeConfig> {
   /**
+   * The root directory of the site.
+   */
+  root?: string;
+  /**
    * Base path of the site.
    */
   base?: string;

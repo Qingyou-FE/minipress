@@ -35,7 +35,7 @@ cli
           { server: { port, host } },
           async (event) => {
             if (!restartPromise) {
-              console.log(
+              logger.greet(
                 `\n✨ ${event.name} ${chalk.green(
                   path.relative(cwd, event.filepath)
                 )}, dev server will restart...\n`

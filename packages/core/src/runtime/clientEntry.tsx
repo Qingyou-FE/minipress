@@ -4,9 +4,12 @@ import { App } from "./App";
 const isProduction = process.env.NODE_ENV === "production";
 
 export async function renderInBrowser() {
+  const app = <App />;
   const container = document.getElementById("root");
 
-  const app = <App />;
+  if (!container) {
+    throw new Error('#root element not found')
+  }
 
   if (isProduction) {
     hydrateRoot(container, app);
@@ -14,3 +17,5 @@ export async function renderInBrowser() {
     createRoot(container).render(app);
   }
 }
+
+renderInBrowser();

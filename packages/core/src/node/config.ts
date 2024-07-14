@@ -1,9 +1,12 @@
 import fs from "fs-extra";
 import path from "node:path";
+import { logger } from "@rsbuild/core";
 import { PLUGIN_SASS_NAME, pluginSass } from "@rsbuild/plugin-sass";
 import { PLUGIN_LESS_NAME, pluginLess } from "@rsbuild/plugin-less";
 import { PLUGIN_REACT_NAME, pluginReact } from "@rsbuild/plugin-react";
 import { removeLeadingSlash, removeTrailingSlash } from "@minipress/shared";
+import { pluginDynamicRoutes } from "./plugins/routesPlugin";
+import { detectReactVersion, resolveReactAlias } from "./toolkit";
 import {
   DEFAULT_CONFIG_EXTENSIONS,
   DEFAULT_CONFIG_NAME,
@@ -15,9 +18,9 @@ import {
   PACKAGE_ROOT,
   PUBLIC_DIR,
   SERVER_ENTRY,
-} from "../common";
+} from "./constant";
 
-import type { UserConfig } from "types/global";
+import type { UserConfig } from "types";
 import type { RsbuildConfig } from "@rsbuild/core";
 
 export async function loadUserConfig(root: string = process.cwd()) {
@@ -27,7 +30,7 @@ export async function loadUserConfig(root: string = process.cwd()) {
   ).find(fs.pathExistsSync);
 
   if (!configPath) {
-    console.debug("no config file found.");
+    logger.debug("no config file found.");
   }
 
   const { loadConfig } = await import("@rsbuild/core");
@@ -74,16 +77,22 @@ export async function createRsbuildConfig(
       ];
 
   function isPluginIncluded(config: UserConfig, pluginName: string): boolean {
-    return config.rsbuildPlugins?.some(
-      (plugin: { name: string }) => plugin.name === pluginName
+    return (
+      config.rsbuildPlugins?.some(
+        (plugin: { name: string }) => plugin.name === pluginName
+      ) ?? false
     );
   }
+
+  const reactVersion = await detectReactVersion();
+  const reactCSRAlias = await resolveReactAlias(reactVersion, false);
 
   return {
     plugins: [
       ...(isPluginIncluded(config, PLUGIN_SASS_NAME) ? [] : [pluginSass()]),
       ...(isPluginIncluded(config, PLUGIN_LESS_NAME) ? [] : [pluginLess()]),
       ...(isPluginIncluded(config, PLUGIN_REACT_NAME) ? [] : [pluginReact()]),
+      pluginDynamicRoutes(config.root || ""),
     ],
     server: {
       port:
@@ -94,7 +103,7 @@ export async function createRsbuildConfig(
         return urls.map((url) => `${url}/${removeLeadingSlash(base)}`);
       },
       publicDir: {
-        name: path.join(config.root, PUBLIC_DIR),
+        name: path.join(config.root || "", PUBLIC_DIR),
       },
     },
     dev: {
@@ -112,6 +121,7 @@ export async function createRsbuildConfig(
     source: {
       alias: {
         "@theme": [CUSTOM_THEME_DIR, DEFAULT_THEME],
+        "react-lazy-with-preload": require.resolve("react-lazy-with-preload"),
       },
       include: [
         PACKAGE_ROOT,
@@ -143,28 +153,28 @@ export async function createRsbuildConfig(
         const isServer = target === "node";
         const jsModuleRule = chain.module.rule(CHAIN_ID.RULE.JS);
 
-        const swcLoaderOptions = jsModuleRule
-          .use(CHAIN_ID.USE.SWC)
-          .get("options");
+        // const swcLoaderOptions = jsModuleRule
+        //   .use(CHAIN_ID.USE.SWC)
+        //   .get("options");
 
-        chain.module
-          .rule("MDX")
-          .type("javascript/auto")
-          .test(MDX_REGEXP)
-          .resolve.merge({
-            conditionNames: jsModuleRule.resolve.conditionNames.values(),
-            mainFields: jsModuleRule.resolve.mainFields.values(),
-          })
-          .end()
-          .oneOf("MDXCompile")
-          .use("builtin:swc-loader")
-          .loader("builtin:swc-loader")
-          .options(swcLoaderOptions)
-          .end()
-          .use("mdx-loader")
-          .loader(require.resolve("../loader.cjs"))
-          .options(config)
-          .end();
+        // chain.module
+        //   .rule("MDX")
+        //   .type("javascript/auto")
+        //   .test(MDX_REGEXP)
+        //   .resolve.merge({
+        //     conditionNames: jsModuleRule.resolve.conditionNames.values(),
+        //     mainFields: jsModuleRule.resolve.mainFields.values(),
+        //   })
+        //   .end()
+        //   .oneOf("MDXCompile")
+        //   .use("builtin:swc-loader")
+        //   .loader("builtin:swc-loader")
+        //   .options(swcLoaderOptions)
+        //   .end()
+        //   .use("mdx-loader")
+        //   .loader(require.resolve("../loader.cjs"))
+        //   .options(config)
+        //   .end();
 
         if (chain.plugins.has(CHAIN_ID.PLUGIN.REACT_FAST_REFRESH)) {
           chain.plugin(CHAIN_ID.PLUGIN.REACT_FAST_REFRESH).tap((options) => {
@@ -192,6 +202,7 @@ export async function createRsbuildConfig(
           entry: {
             index: CLIENT_ENTRY,
           },
+          alias: reactCSRAlias,
           define: {
             "process.env.__SSR__": JSON.stringify(false),
           },

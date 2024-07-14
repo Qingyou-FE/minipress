@@ -1,6 +1,6 @@
 import { Writable } from "node:stream";
-import { renderToPipeableStream } from "react-dom/server";
 import { StaticRouter } from "react-router-dom/server";
+import { renderToPipeableStream } from "react-dom/server";
 import { App } from "./App";
 
 type AppRenderResult = {
@@ -17,8 +17,8 @@ export async function render(pathname: string): Promise<AppRenderResult> {
       <App helmetContext={helmetContext} />
     </StaticRouter>,
     {
-      onError(error: Error) {
-        writableStream.destroy(error);
+      onError(error) {
+        writableStream.destroy(error as Error);
       },
       onAllReady() {
         pipe(writableStream);
@@ -46,12 +46,7 @@ class WritableAsPromise extends Writable {
     super();
 
     this._output = "";
-    this._deferred = {
-      reject: null,
-      resolve: null,
-      promise: null,
-    };
-
+    this._deferred = {} as typeof this._deferred;
     this._deferred.promise = new Promise((resolve, reject) => {
       this._deferred.reject = reject;
       this._deferred.resolve = resolve;

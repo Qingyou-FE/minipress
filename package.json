@@ -6,13 +6,16 @@
     "packages/*"
   ],
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "dev": "nx run-many -t dev",
+    "build": "nx run-many -t build"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
     "@modern-js/module-tools": "^2.55.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
+    "nx": "^19.4.3",
     "typescript": "^5.5.3"
   }
 }

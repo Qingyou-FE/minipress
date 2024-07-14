@@ -18,5 +18,13 @@ export default defineConfig({
         js: 'import { createRequire } from "module";\nconst { url } = import.meta;\nconst require = createRequire(url);',
       },
     },
+    {
+      sourceDir: "src/runtime",
+      buildType: "bundleless",
+      target: "es2020",
+      format: "esm",
+      outDir: "dist/runtime",
+      tsconfig: "./src/runtime/tsconfig.json",
+    },
   ],
 });

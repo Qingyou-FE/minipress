@@ -2,7 +2,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { defineConfig, moduleTools } from "@modern-js/module-tools";
 
-const COMMON_EXTERNALS = [];
+const COMMON_EXTERNALS = ["minipress-routes"];
 
 export default defineConfig({
   plugins: [moduleTools()],

@@ -1,6 +1,6 @@
 import path from "node:path";
 import chokidar from "chokidar";
-import { CONFIG_FILES } from "./common";
+import { CONFIG_FILES } from "./constant";
 import { createRsbuildConfig, loadUserConfig } from "./config";
 import type { RsbuildConfig } from "@rsbuild/core";
 
