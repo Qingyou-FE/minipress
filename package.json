@@ -8,7 +8,8 @@
   "scripts": {
     "prepare": "husky install",
     "dev": "nx run-many -t dev",
-    "build": "nx run-many -t build"
+    "build": "nx run-many -t build",
+    "dev:website": "nx run @minipress/docs:dev"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.3",
