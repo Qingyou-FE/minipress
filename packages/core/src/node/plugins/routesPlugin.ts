@@ -20,12 +20,10 @@ export const pluginDynamicRoutes = (root: string): RsbuildPlugin => {
     setup(api) {
       routeService.init();
 
-      api.modifyBundlerChain((rspackChain, { target }) => {
-        const isSSR = target === "node";
-
+      api.modifyBundlerChain((rspackChain, { isServer }) => {
         rspackChain.plugin(PLUGIN_DYNAMIC_ROUTES).use(
           new RspackVirtualModulePlugin({
-            "minipress-routes": routeService.generateRoutesData(isSSR),
+            "minipress-routes": routeService.generateRoutesData(isServer),
           })
         );
       });

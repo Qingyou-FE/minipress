@@ -5,12 +5,10 @@ export type PluginExampleOptions = {
   bar?: boolean;
 };
 
-const PLUGIN_DYNAMIC_ROUTES = "plugin-dynamic-routes";
-
 export const pluginDynamicRoutes = (
   options: PluginExampleOptions = {}
 ): RsbuildPlugin => ({
-  name: PLUGIN_DYNAMIC_ROUTES,
+  name: "plugin-dynamic-routes",
 
   setup() {
     console.log("Hello Rsbuild!", options);
