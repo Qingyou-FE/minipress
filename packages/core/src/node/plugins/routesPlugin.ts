@@ -20,6 +20,8 @@ export const pluginDynamicRoutes = (root: string): RsbuildPlugin => {
     setup(api) {
       routeService.init();
 
+      api.expose("RouteService", routeService);
+
       api.modifyBundlerChain((rspackChain, { isServer }) => {
         rspackChain.plugin(PLUGIN_DYNAMIC_ROUTES).use(
           new RspackVirtualModulePlugin({
