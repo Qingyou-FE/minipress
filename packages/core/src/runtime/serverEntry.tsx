@@ -3,7 +3,7 @@ import { StaticRouter } from "react-router-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
 import { App } from "./App";
 
-type AppRenderResult = {
+interface AppRenderResult {
   appHtml: string;
   pageData: object;
 };
